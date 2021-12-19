@@ -11,7 +11,7 @@ struct UnionFind{
         return -par[root(x)];
     }
 
-    void conect(int x, int y){
+    void unite(int x, int y){
         x = root(x);
         y = root(y);
         if( x == y)return;
@@ -44,7 +44,7 @@ struct UnionFindRanked{
         return -par[root(x)];
     }
 
-    void conect(int x, int y){
+    void unite(int x, int y){
         //xのほうがランクが高い
         x = root(x);
         y = root(y);
