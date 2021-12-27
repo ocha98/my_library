@@ -1,32 +1,46 @@
 struct WeightedUnionFind{
     vector<int> par;
     vector<int> weight;
-    UnionFind(int n):par(n, -1), w(n,0){}
+    WeightedUnionFind(int n):par(n, -1), weight(n,0){}
 
     int root(int x){
         if(par[x] < 0){
             return x;
         }
+        int r = root(par[x]);
         weight[x] += weight[par[x]];
-        return par[x] = root(par[x]);
+        return par[x] = r;
+    }
+
+    int get_w(int x){
+        root(x);
+        return weight[x];
     }
 
     int size(int x) {
         return -par[root(x)];
     }
 
+    int diff(int x, int y){
+        return get_w(y) - get_w(x);
+    }
+
     void merge(int x, int y, int w){
         //w[y] - w[x] = w
-        w += weight[x];
-        w -= weight[y];
+
+        w += get_w(x);
+        w -= get_w(y);
 
         x = root(x);
         y = root(y);
+
+        if(x == y)return;
 
         if(par[x] > par[y]){
             swap(x, y);
             w = -w;
         }
+
         par[x] += par[y];
         par[y] = x;
         weight[y] = w;
