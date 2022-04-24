@@ -6,7 +6,7 @@ struct Edge{
 
 bool find_negative_loop(int V, vector<Edge> es){
     int n = es.size();
-    vector<int> dist(n);
+    vector<int> dist(V);
     for(int i = 0;i < V; ++i){
         for(int j = 0;j < n; ++j){
             Edge e = es[j];
