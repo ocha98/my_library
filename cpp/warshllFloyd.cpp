@@ -1,4 +1,5 @@
-void warshall_floyd(vector<vector<int>>& cost){
+template<typename T>
+void warshall_floyd(vector<vector<T>>& cost){
     int n = cost.size();
     for(int k = 0;k < n; ++k){
         for(int i = 0;i < n; ++i){
