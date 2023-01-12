@@ -2,37 +2,34 @@ template <typename  T>
 struct ComplexNumber{
     T real, image;
 
-    ComplexNumber(T real, T image):real(real), image(image){}
-    ComplexNumber(T real):real(real), image(0){}
-    ComplexNumber():real(0), image(0){}
+    ComplexNumber(T real = 0, T image = 0):real(real), image(image){}
 
-    double abs()const {
+    T abs()const {
         return sqrt(real*real + image*image);
     }
 
-    T abs2()const {
+    T norm()const {
         return real*real + image*image;
     }
 
-    ComplexNumber conj() const{
+    ComplexNumber conj()const {
         return ComplexNumber(real, -image);
     }
 
     ComplexNumber operator*(const ComplexNumber& a)const {
-        return ComplexNumber(real*a.real - image*a.image, real*a.image + a.real*image);
+        return ComplexNumber(*this) *= a;
     }
 
     ComplexNumber operator+(const ComplexNumber& a)const {
-        return ComplexNumber(real + a.real, image + a.image);
+        return ComplexNumber(*this) += a;
     }
 
     ComplexNumber operator-(const ComplexNumber& a)const {
-        return ComplexNumber(real - a.real, image - a.image);
+        return ComplexNumber(*this) -= a;
     }
 
     ComplexNumber operator/(const ComplexNumber& a)const {
-        auto b = a.real*a.real + a.image*a.image;
-        return ComplexNumber((real*a.real + image*a.image)/b, (a.real*image - real*a.image)/b);
+        return ComplexNumber(*this) /= a;
     }
 
     ComplexNumber& operator+=(const ComplexNumber& a){
@@ -48,16 +45,15 @@ struct ComplexNumber{
     }
 
     ComplexNumber& operator*=(const ComplexNumber& a){
-        ComplexNumber x = (*this) * a;
-        this->real = x.real;
-        this->image = x.image;
+        this->real = real*a.real - image*a.image;
+        this->image = real*a.image + image*a.real;
         return *this;
     }
 
     ComplexNumber& operator/=(const ComplexNumber& a){
-        ComplexNumber x = *this / a;
-        this->real = x.real;
-        this-> image = x.image;
+        T x = a.real*a.real + a.image*a.image;
+        this->real = (real*a.real + image*a.image) / x;
+        this-> image = (image*a.real - real*a.image) / x;
         return *this;
     }
 
@@ -72,7 +68,7 @@ struct ComplexNumber{
     bool operator<(const ComplexNumber& a) const {
         if (real == a.real){
             return image < a.image;
-        } 
+        }
         return real < a.real;
     }
 };
