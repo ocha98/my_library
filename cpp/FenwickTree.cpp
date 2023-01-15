@@ -6,6 +6,7 @@ struct FenwickTree{
     FenwickTree(int n):n(n), data(n+1){}
 
     void add(int i, T x){
+        i++;
         while(i <= n){
             data[i] += x;
             i += i & -i;
