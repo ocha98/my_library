@@ -1,18 +1,19 @@
-#include <vector>
-#include <queue>
-using namespace std;
-//参考:: https://qiita.com/Morifolium/items/6c8f0a188af2f9620db2
-
-vector<int> topological_sort(vector<vector<int>> to, vector<int> count){
-    // count::頂点の入力数
+vector<int> topological_sort(vector<vector<int>>& to){
     int n = to.size();
-    vector<int> sorted;
-    queue<int> zero;
+    vector<int> count(n);
 
+    for(int i = 0;i < n; ++i){
+        for(int v: to[i]){
+            count[v]++;
+        }
+    }
+
+    queue<int> zero;
     for(int i = 0;i < n; ++i){
         if(count[i] == 0)zero.push(i);
     }
 
+    vector<int> sorted;
     while(!zero.empty()){
         int v = zero.front();
         zero.pop();
