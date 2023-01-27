@@ -2,7 +2,7 @@ template<typename T>
 struct SegmentTree {
     private:
     int n = 1;
-    vector<int> node;
+    vector<T> node;
     function<T(T,T)> op;
     T e;
 
