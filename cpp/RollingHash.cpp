@@ -1,8 +1,8 @@
 struct RollingHash {
-    static const long long mod = (1LL << 61) - 1;
+    const long long mod = (1LL << 61) - 1;
     const long long mask30 = (1LL << 30) - 1;
     const long long mask31 = (1LL << 31) - 1;
-    static long long base;
+    const long long base = 123;// modの原始根
     vector<long long> hash, power;
 
     RollingHash(const string& s){
@@ -62,18 +62,3 @@ struct RollingHash {
         return ret;
     }
 };
-
-long long RollingHash::base = 37;
-
-void set_base() {
-    mt19937 rd{(unsigned int)time(NULL)};
-    uniform_int_distribution<long long> dist(2, RollingHash::mod -1);
-    for(int i = 0;i < 100; ++i){
-        long long k = dist(rd);
-        long long tmp = pow(RollingHash::base, k);
-        if(tmp > 'z'){
-            RollingHash::base = tmp;
-            break;
-        }
-    }
-}
