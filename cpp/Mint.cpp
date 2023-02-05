@@ -3,23 +3,22 @@ struct Mint{
     long long val;
 
     public:
-    Mint():val(0){}
-    Mint(long long x):val((x%MOD + MOD)%MOD){}
+    Mint(long long x=0):val((x%MOD + MOD)%MOD){}
 
     Mint operator*(const Mint& a)const {
-        return Mint(this->val * a.val);
+        return Mint(*this) *= a;
     }
 
     Mint operator/(const Mint& a)const {
-        return Mint(this->val * a.inv().val);
+        return Mint(*this) /= a;
     }
 
     Mint operator+(const Mint& a)const {
-        return Mint(this->val + a.val);
+        return Mint(*this) += a;
     }
 
     Mint operator-(const Mint& a)const {
-        return Mint(this->val - a.val);
+        return Mint(*this) -= a;
     }
 
     Mint operator-()const {
@@ -50,12 +49,13 @@ struct Mint{
 
     Mint& operator+= (const Mint &a){
         this->val += a.val;
-        this->val %= MOD;
+        if(this->val >= MOD)this->val -= MOD;
         return *this;
     }
 
     Mint& operator-= (const Mint &a){
-        this->val = (this->val - a.val + MOD) % MOD;
+        this->val +=  MOD - a.val;
+        if(this->val >= MOD)this->val -= MOD;
         return *this;
     }
 
@@ -70,10 +70,9 @@ struct Mint{
         return *this;
     }
 
-
     Mint inv()const{
         return pow(MOD - 2);
-    } 
+    }
 
     Mint pow(long long n)const {
         if(n == 0)return 1;
