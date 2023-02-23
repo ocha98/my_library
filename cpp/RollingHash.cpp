@@ -47,18 +47,4 @@ struct RollingHash {
         if (res >= mod) res -= mod;
         return res;
     }
-
-    long long pow(long long x, long long n){
-        long long ret = 1;
-        x %= mod;
-        while (n > 0) {
-            if (n & 1){
-                ret = mul(ret, x);
-            }
-
-            x = mul(x, x);
-            n >>= 1;
-        }
-        return ret;
-    }
 };

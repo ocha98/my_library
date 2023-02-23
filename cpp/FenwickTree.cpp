@@ -6,6 +6,7 @@ struct FenwickTree{
     FenwickTree(int n):n(n), data(n+1){}
 
     void add(int i, T x){
+        assert(i < n);
         i++;
         while(i <= n){
             data[i] += x;
@@ -15,6 +16,7 @@ struct FenwickTree{
 
     // sum[0, i)
     T sum(int i) const{
+        assert(i <= n);
         T retu_sum = 0;
         while(i > 0){
             retu_sum += data[i];

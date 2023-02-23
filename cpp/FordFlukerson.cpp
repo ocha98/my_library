@@ -2,7 +2,6 @@ struct FordFlukerson {
     struct Edge {
         int to, rev;
         long long cap;
-        Edge(){}
         Edge(int to, long long cap, int rev):to(to), cap(cap), rev(rev){}
     };
     vector<vector<Edge>> es;
@@ -19,27 +18,27 @@ struct FordFlukerson {
         long long flow = 0;
         while(true){
             vector<bool> used(n);
-
-            function<long long(int, long long)> dfs = [&](int v, long long f){
-                if(v == t)return f;
-                used[v] = true;
-                for(Edge& e: es[v]){
-                    if(used[e.to])continue;
-                    if(e.cap <= 0)continue;
-
-                    long long d = dfs(e.to, min(f, e.cap));
-                    if(d > 0){
-                        e.cap -= d;
-                        es[e.to][e.rev].cap += d;
-                        return d;
-                    }
-                }
-                return 0LL;
-            };
-
-            long long f = dfs(s, INF);
+            long long f = dfs(s, t, INF, used);
             if(f == 0)return flow;
             flow += f;
         }
+    }
+
+    private:
+    long long dfs(int v, int t, long long f, vector<bool>& used){
+        if(v == t)return f;
+        used[v] = true;
+        for(Edge& e:es[v]){
+            if(used[e.to])continue;
+            if(e.cap <= 0)continue;
+
+            long long d = dfs(e.to, t, min(f, e.cap), used);
+            if(d > 0){
+                e.cap -= d;
+                es[e.to][e.rev].cap += d;
+                return d;
+            }
+        }
+        return 0;
     }
 };
