@@ -22,7 +22,21 @@ struct SegmentTree {
         node.resize(2*n-1, e);
     }
 
+    SegmentTree(const vector<T>& elem, function<T(T,T)> op, T e):op(op), e(e){
+        int _n = elem.size();
+        while(n < _n) n <<= 1;
+        node.resize(2*n-1, e);
+        for(int i = 0;i < _n; ++i){
+            node[i+n-1] = elem[i];
+        }
+
+        for(int k = n-2; k >= 0; k--) {
+            node[k] = op(node[2 * k + 1], node[2 * k + 2]);
+        }
+    }
+
     void update(int x, T val){
+        assert(x < n);
         x += n-1;
 
         node[x] = val;
@@ -34,10 +48,13 @@ struct SegmentTree {
 
     //[a, b)
     T query(int a, int b)const {
+        assert(b <= n);
+        assert(a <= n);
         return query(a, b, 0, 0, n);
     }
 
     T get(int i) const{
+        assert(i < n);
         i += n-1;
         return node[i];
     }
