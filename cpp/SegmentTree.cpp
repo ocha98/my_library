@@ -26,10 +26,20 @@ struct SegmentTree {
         int _n = elem.size();
         while(n < _n) n <<= 1;
         node.resize(2*n-1, e);
-        for(int i = 0;i < _n; ++i){
-            node[i+n-1] = elem[i];
-        }
 
+        for(int i = 0;i < _n; ++i){
+            set(i, elem[i]);
+        }
+        build();
+    }
+
+    void set(int i, T val) {
+        assert(i < n);
+        i += n-1;
+        node[i] = val;
+    }
+
+    void build() {
         for(int k = n-2; k >= 0; k--) {
             node[k] = op(node[2 * k + 1], node[2 * k + 2]);
         }
