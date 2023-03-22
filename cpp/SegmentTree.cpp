@@ -1,31 +1,21 @@
-template<typename T>
+template<typename T,  T(*op)(T, T)>
 struct SegmentTree {
+    // 1-index tree
     private:
     int n = 1;
     vector<T> node;
-    function<T(T,T)> op;
     T e;
 
-    T query(int a, int b, int k, int l, int r) const{
-        if(r <= a || b <= l)return e;
-
-        if(a <= l && r <= b)return node[k];
-
-        T vl = query(a, b, 2*k+1, l, (l+r)/2);
-        T vr = query(a, b, 2*k+2, (l+r)/2, r);
-        return op(vl, vr);
-    }
-
     public:
-    SegmentTree(int _n, function<T(T,T)> op, T e):op(op), e(e){
+    SegmentTree(int _n, T e): e(e){
         while(n < _n)n <<= 1;
-        node.resize(2*n-1, e);
+        node.resize(2*n, e);
     }
 
-    SegmentTree(const vector<T>& elem, function<T(T,T)> op, T e):op(op), e(e){
+    SegmentTree(const vector<T>& elem, T e):e(e){
         int _n = elem.size();
         while(n < _n) n <<= 1;
-        node.resize(2*n-1, e);
+        node.resize(2*n, e);
 
         for(int i = 0;i < _n; ++i){
             set(i, elem[i]);
@@ -35,37 +25,52 @@ struct SegmentTree {
 
     void set(int i, T val) {
         assert(i < n);
-        i += n-1;
-        node[i] = val;
+        node[i + n] = val;
     }
 
     void build() {
-        for(int k = n-2; k >= 0; k--) {
-            node[k] = op(node[2 * k + 1], node[2 * k + 2]);
+        for(int k = n-1; k > 0; --k) {
+            node[k] = op(node[k<<1], node[k << 1 | 1]);
         }
     }
 
     void update(int x, T val){
         assert(x < n);
-        x += n-1;
+        x += n;
 
         node[x] = val;
-        while(x > 0){
-            x = (x-1)/2;
-            node[x] = op(node[2*x+1], node[2*x+2]);
+        while(x > 1){
+            x >>= 1;
+            node[x] = op(node[x<<1], node[x<<1 | 1]);
         }
     }
 
-    //[a, b)
-    T query(int a, int b)const {
-        assert(b <= n);
-        assert(a <= n);
-        return query(a, b, 0, 0, n);
+    //[l, r)
+    T query(int l, int r)const {
+        assert(l <= n);
+        assert(l <= n);
+        l += n;
+        r += n;
+        T x = e;
+        while(l < r){
+            if(l&1){
+                x = op(x, node[l]);
+                ++l;
+            }
+            if(r&1){
+                --r;
+                x = op(x, node[r]);
+            }
+            l >>= 1;
+            r >>= 1;
+        }
+
+        return x;
     }
 
     T get(int i) const{
         assert(i < n);
-        i += n-1;
+        i += n;
         return node[i];
     }
 };
