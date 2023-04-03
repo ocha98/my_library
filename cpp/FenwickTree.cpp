@@ -14,6 +14,11 @@ struct FenwickTree{
         }
     }
 
+    T get(int i) const {
+        assert(i < n);
+        return sum(i, i+1);
+    }
+
     // sum[0, i)
     T sum(int i) const{
         assert(i <= n);
@@ -28,6 +33,8 @@ struct FenwickTree{
 
     // sum[l, r)
     T sum(int l, int r) const {
+        assert(l <= n);
+        assert(r <= n);
         return sum(r) - sum(l);
     }
 };
