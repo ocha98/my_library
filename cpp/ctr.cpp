@@ -15,7 +15,7 @@ pair<T,T> ctr(const vector<T>& rs, const vector<T>& ms){
             swap(m0, m1);
         }
 
-        T g = __gcd(m0, m1);
+        T g = gcd(m0, m1);
         if(r0%g != r1%g){
             return pair<T,T>(-1, -1);
         }
