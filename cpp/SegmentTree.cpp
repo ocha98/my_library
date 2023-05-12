@@ -24,7 +24,7 @@ struct SegmentTree {
     }
 
     void set(int i, T val) {
-        assert(i < n);
+        assert(0 <= i && i < n);
         node[i + n] = val;
     }
 
@@ -35,7 +35,7 @@ struct SegmentTree {
     }
 
     void update(int x, T val){
-        assert(x < n);
+        assert(0 <= x && x < n);
         x += n;
 
         node[x] = val;
@@ -47,29 +47,30 @@ struct SegmentTree {
 
     //[l, r)
     T query(int l, int r)const {
-        assert(l <= n);
-        assert(l <= n);
+        assert(0 <= l && l <= n);
+        assert(0 <= r && r <= n);
         l += n;
         r += n;
-        T x = e;
+        T ans_l = e;
+        T ans_r = e;
         while(l < r){
             if(l&1){
-                x = op(x, node[l]);
+                ans_l = op(ans_l, node[l]);
                 ++l;
             }
             if(r&1){
                 --r;
-                x = op(x, node[r]);
+                ans_r = op(node[r], ans_r);
             }
             l >>= 1;
             r >>= 1;
         }
 
-        return x;
+        return op(ans_l, ans_r);
     }
 
     T get(int i) const{
-        assert(i < n);
+        assert(0 <= i && i < n);
         i += n;
         return node[i];
     }
