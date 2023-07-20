@@ -3,7 +3,7 @@ class KMP {
     vector<int> table;
     string pattern;
 
-    vector<int> create_table(){
+    void create_table(){
         assert(pattern.length() > 0);
 
         const int n = pattern.length();
@@ -17,8 +17,6 @@ class KMP {
             ++j;
             table[i+1] = j;
         }
-
-        return table;
     }
 
     public:
