@@ -1,19 +1,23 @@
-const MOD: i64 = 998244353;
-
 #[derive(Copy, Clone)]
 struct Mint {
     v: i64,
 }
 
+#[allow(dead_code)]
 impl Mint {
-    fn new(mut v: i64) -> Mint{
+    fn new(mut v: i64) -> Mint {
         v %= MOD;
-        v += MOD;
-        v %= MOD;
+        if v < 0 {
+            v += MOD;
+        }
         Mint { v }
     }
 
-    fn pow(&self, mut n: i64) -> Mint{
+    fn zero() -> Mint {
+        Mint { v: 0 }
+    }
+
+    fn pow(&self, mut n: i64) -> Mint {
         let mut resu = Mint::new(1);
         let mut x = *self;
         while n > 0 {
@@ -21,7 +25,7 @@ impl Mint {
                 resu *= x;
             }
             x *= x;
-            n /= 2;
+            n >>= 1;
         }
         resu
     }
@@ -33,47 +37,68 @@ impl Mint {
 
 impl std::ops::Add for Mint {
     type Output = Self;
-    fn add(self, other: Self) -> Self {
-        Mint::new((self.v + other.v)%MOD)
+    fn add(self, rhs: Self) -> Self {
+        let mut retu = self.clone();
+        retu += rhs;
+        retu
     }
 }
 
 impl std::ops::Sub for Mint {
     type Output = Self;
-    fn sub(self, other: Self) -> Self {
-        Mint::new((self.v - other.v + MOD)%MOD)
+    fn sub(self, rhs: Self) -> Self {
+        let mut retu = self.clone();
+        retu -= rhs;
+        retu
     }
 }
 
 impl std::ops::Mul for Mint {
     type Output = Self;
-    fn mul(self, other: Self) -> Self {
-        Mint::new(self.v*other.v % MOD)
+    fn mul(self, rhs: Self) -> Self {
+        let mut retu = self.clone();
+        retu *= rhs;
+        retu
     }
 }
 
 impl std::ops::Div for Mint {
     type Output = Self;
-    fn div(self, other: Self) -> Self {
-        self*other.inv()
+    fn div(self, rhs: Self) -> Self {
+        let mut retu = self.clone();
+        retu /= rhs;
+        retu
     }
 }
 
 impl std::ops::AddAssign for Mint {
-    fn add_assign(&mut self, other: Self) {
-        *self = *self + other;
+    fn add_assign(&mut self, rhs: Self) {
+        self.v += rhs.v;
+        if self.v >= MOD {
+            self.v -= MOD;
+        }
+    }
+}
+
+impl std::ops::SubAssign for Mint {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.v += MOD - rhs.v;
+        if self.v >= MOD {
+            self.v -= MOD;
+        }
     }
 }
 
 impl std::ops::MulAssign for Mint {
     fn mul_assign(&mut self, rhs: Self) {
-        *self = *self * rhs;
+        self.v *= rhs.v;
+        self.v %= MOD;
     }
 }
 
 impl std::ops::DivAssign for Mint {
     fn div_assign(&mut self, rhs: Self) {
-        *self = *self / rhs;
+        *self *= rhs.inv();
     }
 }
 
