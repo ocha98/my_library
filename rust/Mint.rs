@@ -1,4 +1,4 @@
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 struct Mint {
     v: i64,
 }
@@ -11,10 +11,6 @@ impl Mint {
             v += MOD;
         }
         Mint { v }
-    }
-
-    fn zero() -> Mint {
-        Mint { v: 0 }
     }
 
     fn pow(&self, mut n: i64) -> Mint {
@@ -37,37 +33,33 @@ impl Mint {
 
 impl std::ops::Add for Mint {
     type Output = Self;
-    fn add(self, rhs: Self) -> Self {
-        let mut retu = self.clone();
-        retu += rhs;
-        retu
+    fn add(mut self, rhs: Self) -> Self {
+        self += rhs;
+        self
     }
 }
 
 impl std::ops::Sub for Mint {
     type Output = Self;
-    fn sub(self, rhs: Self) -> Self {
-        let mut retu = self.clone();
-        retu -= rhs;
-        retu
+    fn sub(mut self, rhs: Self) -> Self {
+        self -= rhs;
+        self
     }
 }
 
 impl std::ops::Mul for Mint {
     type Output = Self;
-    fn mul(self, rhs: Self) -> Self {
-        let mut retu = self.clone();
-        retu *= rhs;
-        retu
+    fn mul(mut self, rhs: Self) -> Self {
+        self *= rhs;
+        self
     }
 }
 
 impl std::ops::Div for Mint {
     type Output = Self;
-    fn div(self, rhs: Self) -> Self {
-        let mut retu = self.clone();
-        retu /= rhs;
-        retu
+    fn div(mut self, rhs: Self) -> Self {
+        self /= rhs;
+        self
     }
 }
 
@@ -105,7 +97,7 @@ impl std::ops::DivAssign for Mint {
 impl std::str::FromStr for Mint {
     type Err = std::num::ParseIntError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let v = s.parse().unwrap();
+        let v = s.parse()?;
         Ok(Mint::new(v))
     }
 }
