@@ -1,21 +1,20 @@
 #[derive(Copy, Clone, Default)]
-struct Mint {
-    v: i64,
-}
+struct ModInt<const MOD: i64>(i64);
 
-#[allow(dead_code)]
-impl Mint {
-    fn new(mut v: i64) -> Mint {
+impl<const MOD: i64> ModInt<MOD> {
+    fn new(mut v: i64) -> Self {
         v %= MOD;
-        if v < 0 {
-            v += MOD;
-        }
-        Mint { v }
+        if v < 0 { v += MOD; }
+        Self(v)
     }
 
-    fn pow(&self, mut n: i64) -> Mint {
-        let mut resu = Mint::new(1);
+    fn pow(&self, mut n: i64) -> Self {
+        let mut resu = Self::new(1);
         let mut x = *self;
+        if n < 0 {
+            x = x.inv();
+            n *= -1;
+        }
         while n > 0 {
             if n & 1 == 1 {
                 resu *= x;
@@ -26,84 +25,79 @@ impl Mint {
         resu
     }
 
-    fn inv(&self) -> Mint {
+    fn inv(&self) -> Self {
         self.pow(MOD - 2)
     }
 }
 
-impl std::ops::Add for Mint {
-    type Output = Self;
-    fn add(mut self, rhs: Self) -> Self {
-        self += rhs;
-        self
-    }
+macro_rules! impl_ops {
+    ($trait:ident, $fn:ident, $op:tt) => {
+        impl<const MOD: i64> std::ops::$trait for ModInt<MOD> {
+            type Output = Self;
+            fn $fn(mut self, rhs: Self) -> Self {
+                self $op rhs;
+                self
+            }
+        }
+    };
 }
 
-impl std::ops::Sub for Mint {
-    type Output = Self;
-    fn sub(mut self, rhs: Self) -> Self {
-        self -= rhs;
-        self
-    }
+macro_rules! impl_from {
+    ($($type:ty),*) => {
+        $(
+            impl<const MOD: i64> From<$type> for ModInt<MOD> {
+                fn from(value: $type) -> Self {
+                    Self::new(value as i64)
+                }
+            }
+        )*
+    };
 }
 
-impl std::ops::Mul for Mint {
-    type Output = Self;
-    fn mul(mut self, rhs: Self) -> Self {
-        self *= rhs;
-        self
-    }
-}
+impl_from!(i32, u32, i64, u64, isize, usize);
 
-impl std::ops::Div for Mint {
-    type Output = Self;
-    fn div(mut self, rhs: Self) -> Self {
-        self /= rhs;
-        self
-    }
-}
+impl_ops!(Add, add, +=);
+impl_ops!(Sub, sub, -=);
+impl_ops!(Mul, mul, *=);
+impl_ops!(Div, div, /=);
 
-impl std::ops::AddAssign for Mint {
+impl<const MOD: i64> std::ops::AddAssign for ModInt<MOD> {
     fn add_assign(&mut self, rhs: Self) {
-        self.v += rhs.v;
-        if self.v >= MOD {
-            self.v -= MOD;
-        }
+        self.0 += rhs.0;
+        if self.0 >= MOD { self.0 -= MOD; }
     }
 }
 
-impl std::ops::SubAssign for Mint {
+impl<const MOD: i64> std::ops::SubAssign for ModInt<MOD> {
     fn sub_assign(&mut self, rhs: Self) {
-        self.v += MOD - rhs.v;
-        if self.v >= MOD {
-            self.v -= MOD;
-        }
+        self.0 += MOD - rhs.0;
+        if self.0 >= MOD { self.0 -= MOD; }
     }
 }
 
-impl std::ops::MulAssign for Mint {
+impl<const MOD: i64> std::ops::MulAssign for ModInt<MOD> {
     fn mul_assign(&mut self, rhs: Self) {
-        self.v *= rhs.v;
-        self.v %= MOD;
+        self.0 *= rhs.0;
+        self.0 %= MOD;
     }
 }
 
-impl std::ops::DivAssign for Mint {
+impl<const MOD: i64> std::ops::DivAssign for ModInt<MOD> {
     fn div_assign(&mut self, rhs: Self) {
         *self *= rhs.inv();
     }
 }
 
-impl std::str::FromStr for Mint {
+impl<const MOD: i64> std::str::FromStr for ModInt<MOD> {
     type Err = std::num::ParseIntError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let v = s.parse()?;
-        Ok(Mint::new(v))
+        Ok(ModInt::new(v))
     }
 }
 
-impl std::fmt::Display for Mint {
+impl<const MOD: i64> std::fmt::Display for ModInt<MOD> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.v)
+        write!(f, "{}", self.0)
     }
 }
