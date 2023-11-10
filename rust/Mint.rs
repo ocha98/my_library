@@ -1,12 +1,8 @@
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
 struct ModInt<const MOD: i64>(i64);
 
 impl<const MOD: i64> ModInt<MOD> {
-    fn new(mut v: i64) -> Self {
-        v %= MOD;
-        if v < 0 { v += MOD; }
-        Self(v)
-    }
+    fn new(v: i64) -> Self { Self(v.rem_euclid(MOD)) }
 
     fn pow(&self, mut n: i64) -> Self {
         let mut resu = Self::new(1);
@@ -25,9 +21,7 @@ impl<const MOD: i64> ModInt<MOD> {
         resu
     }
 
-    fn inv(&self) -> Self {
-        self.pow(MOD - 2)
-    }
+    fn inv(&self) -> Self { self.pow(MOD - 2) }
 }
 
 macro_rules! impl_ops {
@@ -54,7 +48,7 @@ macro_rules! impl_from {
     };
 }
 
-impl_from!(i32, u32, i64, u64, isize, usize);
+impl_from!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize);
 
 impl_ops!(Add, add, +=);
 impl_ops!(Sub, sub, -=);
