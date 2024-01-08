@@ -1,17 +1,17 @@
 struct MinHeap<T: Ord> {
-    heap: BinaryHeap<Reverse<T>>,
+    heap: std::collections::BinaryHeap<std::cmp::Reverse<T>>,
 }
 
 #[allow(dead_code)]
 impl<T: Ord> MinHeap<T> {
     fn new() -> Self {
         MinHeap {
-            heap: BinaryHeap::new(),
+            heap: std::collections::BinaryHeap::new(),
         }
     }
 
     fn push(&mut self, value: T) {
-        self.heap.push(Reverse(value));
+        self.heap.push(std::cmp::Reverse(value));
     }
 
     fn pop(&mut self) -> Option<T> {

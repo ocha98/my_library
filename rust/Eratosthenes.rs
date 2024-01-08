@@ -1,29 +1,39 @@
+#[allow(dead_code)]
 struct Eratosthenes {
     min_factor: Vec<usize>,
+    primes: Vec<usize>,
+    n: usize
 }
 
+#[allow(dead_code)]
 impl Eratosthenes {
     fn new(n: usize) -> Self {
         let mut min_factor = vec![0; n+1];
+        let mut primes = vec![];
         min_factor[1] = 1;
         for i in 2..=n {
-            if min_factor[i] != 0 { continue; }
-            let mut j = i;
-            while j <= n {
-                min_factor[j] = i;
-                j += i;
+            if min_factor[i] == 0 {
+                min_factor[i] = i;
+                primes.push(i);
+            }
+
+            for p in &primes {
+                if p*i > n || *p > min_factor[i] { break; }
+                min_factor[p*i] = *p;
             }
         }
 
-        Eratosthenes { min_factor }
+        Eratosthenes { min_factor, primes, n }
     }
 
     fn is_prime(&self, n: usize) -> bool {
-        if n == 1 { return false; }
+        assert!(n <= self.n);
+        if n == 1 || n == 0 { return false; }
         return n == self.min_factor[n];
     }
 
-    fn factorize(&self,mut n: usize) -> Vec<(usize, i32)>{
+    fn factorize(&self, mut n: usize) -> Vec<(usize, i32)>{
+        assert!(1 <= n && n <= self.n);
         let mut res = vec![];
         while n > 1 {
             let p = self.min_factor[n];
@@ -37,7 +47,8 @@ impl Eratosthenes {
         res
     }
 
-    fn divisors(&self,n: usize) -> Vec<usize> {
+    fn divisors(&self, n: usize) -> Vec<usize> {
+        assert!(1 <= n && n <= self.n);
         let mut res = vec![1];
         let factors = self.factorize(n);
 
