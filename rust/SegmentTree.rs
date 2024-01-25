@@ -1,15 +1,14 @@
-trait Monoid: Clone {
+pub trait Monoid: Clone {
     fn e() -> Self;
 
     fn op(a: &Self, b: &Self) -> Self;
 }
 
-struct  SegmentTree<M> {
+pub struct  SegmentTree<M> {
     n: usize,
     node: Vec<M>,
 }
 
-#[allow(dead_code)]
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(mut n: usize) -> SegmentTree<M> {
         n = n.next_power_of_two();
@@ -41,7 +40,20 @@ impl<M: Monoid> SegmentTree<M> {
         }
     }
 
-    pub fn query(&self, mut l: usize, mut r: usize) -> M {
+    pub fn query<R>(&self, rng: R) -> M
+    where R: std::ops::RangeBounds<usize>
+    {
+        let mut l = match rng.start_bound() {
+            std::ops::Bound::Excluded(&v) => v+1,
+            std::ops::Bound::Included(&v) => v,
+            std::ops::Bound::Unbounded => 0,
+        };
+        let mut r = match rng.end_bound() {
+            std::ops::Bound::Excluded(&v) => v,
+            std::ops::Bound::Included(&v) => v+1,
+            std::ops::Bound::Unbounded => self.n,
+        };
+
         assert!(l <= self.n);
         assert!(r <= self.n);
 
