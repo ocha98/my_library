@@ -88,7 +88,7 @@ struct Mint{
     constexpr long long mod() const { return MOD; }
 };
 
-template<long MOD>
+template<long long MOD>
 istream& operator>>(istream& is, Mint<MOD>& a){
     long long val;
     is >> val;
@@ -96,7 +96,7 @@ istream& operator>>(istream& is, Mint<MOD>& a){
     return is;
 }
 
-template<long MOD>
+template<long long MOD>
 ostream& operator<<(ostream& os, const Mint<MOD>& a){
     return os << a.get();
 }

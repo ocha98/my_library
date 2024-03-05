@@ -7,34 +7,26 @@ struct SegmentTree {
     T e;
 
     public:
-    SegmentTree(int _n, T e): e(e){
+    SegmentTree(int _n, T e): e(e) {
         while(n < _n)n <<= 1;
         node.resize(2*n, e);
     }
 
-    SegmentTree(const vector<T>& elem, T e):e(e){
+    SegmentTree(const vector<T>& elem, T e): e(e) {
         int _n = elem.size();
         while(n < _n) n <<= 1;
         node.resize(2*n, e);
 
-        for(int i = 0;i < _n; ++i){
-            set(i, elem[i]);
+        for(int i = 0;i < _n; ++i) {
+            node[i + n] = elem[i];
         }
-        build();
-    }
 
-    void set(int i, T val) {
-        assert(0 <= i && i < n);
-        node[i + n] = val;
-    }
-
-    void build() {
         for(int k = n-1; k > 0; --k) {
             node[k] = op(node[k<<1], node[k << 1 | 1]);
         }
     }
 
-    void update(int x, T val){
+    void set(int x, T val){
         assert(0 <= x && x < n);
         x += n;
 
@@ -46,9 +38,8 @@ struct SegmentTree {
     }
 
     //[l, r)
-    T query(int l, int r)const {
-        assert(0 <= l && l <= n);
-        assert(0 <= r && r <= n);
+    T query(int l, int r) const {
+        assert(0 <= l && l <= r && r <= n);
         l += n;
         r += n;
         T ans_l = e;
@@ -69,7 +60,7 @@ struct SegmentTree {
         return op(ans_l, ans_r);
     }
 
-    T get(int i) const{
+    T get(int i) const {
         assert(0 <= i && i < n);
         i += n;
         return node[i];
