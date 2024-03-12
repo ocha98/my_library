@@ -27,7 +27,7 @@ impl<S: Monoid, F: Mapping<S>> LazySegmentTree<S, F> {
     }
 
     pub fn apply<R>(&mut self, rng: R, f: F)
-    where R: RangeBounds<usize>
+    where R: std::ops::RangeBounds<usize>
     {
         let (mut l, mut r) = self.get_bound(rng);
         self.range_propagate(l..r);
@@ -84,7 +84,7 @@ impl<S: Monoid, F: Mapping<S>> LazySegmentTree<S, F> {
     }
 
     pub fn query<R>(&mut self, rng: R) -> S
-    where R: RangeBounds<usize>
+    where R: std::ops::RangeBounds<usize>
     {
         let (mut l, mut r) = self.get_bound(rng);
         assert!(l <= r && r <= self.n);
@@ -113,7 +113,7 @@ impl<S: Monoid, F: Mapping<S>> LazySegmentTree<S, F> {
     }
 
     fn range_propagate<R>(&mut self, rng: R)
-    where R: RangeBounds<usize>
+    where R: std::ops::RangeBounds<usize>
     {
         let (mut l, mut r) = self.get_bound(rng);
         l += self.n;
@@ -137,7 +137,7 @@ impl<S: Monoid, F: Mapping<S>> LazySegmentTree<S, F> {
         self.lazy[k] = F::e();
     }
 
-    fn get_bound<R: RangeBounds<usize>>(&self, rng: R) -> (usize, usize) {
+    fn get_bound<R: std::ops::RangeBounds<usize>>(&self, rng: R) -> (usize, usize) {
         let l = match rng.start_bound() {
             std::ops::Bound::Excluded(&v) => v+1,
             std::ops::Bound::Included(&v) => v,
