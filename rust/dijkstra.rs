@@ -11,14 +11,11 @@ fn dijkstra(start: usize, es: &Vec<Vec<Edge>>) -> Vec<i64>{
 
     dist[start] = 0;
     que.push((-0, start));
-    while !que.is_empty() {
-        let (mut w, v) = que.pop().unwrap();
+    while let Some((mut w, v)) = que.pop() {
         w *= -1;
         if dist[v] < w { continue; }
 
-        let m = es[v].len();
-        for i in 0..m {
-            let e = &es[v][i];
+        for e in &es[v] {
             if dist[e.to] > dist[v] + e.cost {
                 dist[e.to] = dist[v] + e.cost;
                 que.push((-dist[e.to], e.to));
