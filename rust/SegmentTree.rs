@@ -9,6 +9,18 @@ pub struct  SegmentTree<M> {
     node: Vec<M>,
 }
 
+impl<M: Monoid> From<&Vec<M>> for SegmentTree<M> {
+    fn from(value: &Vec<M>) -> Self {
+        let n = value.len();
+        let mut tree = SegmentTree::new(n);
+        for i in 0..n {
+            tree.set(i, value[i].clone());
+        }
+
+        tree
+    }
+}
+
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(mut n: usize) -> SegmentTree<M> {
         n = n.next_power_of_two();
@@ -18,18 +30,7 @@ impl<M: Monoid> SegmentTree<M> {
         }
     }
 
-    pub fn set(&mut self, i: usize, val: M) {
-        assert!(i < self.n);
-        self.node[i + self.n] = val;
-    }
-
-    pub fn build(&mut self) {
-        for k in (1..self.n).rev() {
-            self.node[k] = M::op(&self.node[k<<1], &self.node[k<<1 | 1]);
-        }
-    }
-
-    pub fn update(&mut self, mut i: usize, val: M) {
+    pub fn set(&mut self, mut i: usize, val: M) {
         assert!(i < self.n);
         i += self.n;
 
