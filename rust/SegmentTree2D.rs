@@ -7,14 +7,19 @@ pub trait Monoid: Clone {
 struct SegTree2D<T: Monoid> {
     h: usize,
     w: usize,
-    data: Vec<Vec<T>>
+    data: Vec<T>
 }
 
 impl<T: Monoid> SegTree2D<T> {
+    #[inline]
+    fn id(&self, i: usize, j: usize) -> usize {
+        i*2*self.w + j
+    }
+
     fn new(h: usize, w: usize) -> Self {
         let h = h.next_power_of_two();
         let w = w.next_power_of_two();
-        let data = vec![vec![T::e(); 2*w]; 2*h];
+        let data = vec![T::e(); 4*h*w];
         Self {
             h,
             w,
@@ -27,20 +32,24 @@ impl<T: Monoid> SegTree2D<T> {
         i += self.h;
         j += self.w;
 
-        self.data[i][j] = val;
+        let id = self.id(i, j);
+        self.data[id] = val;
 
         let mut w = j>>1;
         while w > 0 {
-            self.data[i][w] = self.data[i][w << 1].op(&self.data[i][w << 1 | 1]);
+            let id = self.id(i, w);
+            self.data[id] = self.data[self.id(i, w<<1)].op(&self.data[self.id(i, w<<1 | 1)]);
             w >>= 1;
         }
 
         let mut h = i>>1;
         while h > 0 {
-            self.data[h][j] = self.data[h << 1][j].op(&self.data[h<<1 | 1][j]);
+            let id = self.id(h, j);
+            self.data[id] = self.data[self.id(h << 1, j)].op(&self.data[self.id(h<<1 | 1, j)]);
             let mut w = j>>1;
             while w > 0 {
-                self.data[h][w] = self.data[h][w << 1].op(&self.data[h][w << 1 | 1]);
+                let id = self.id(h, w);
+                self.data[id] = self.data[self.id(h, w << 1)].op(&self.data[self.id(h, w<<1 | 1)]);
                 w >>= 1;
             }
             h >>= 1;
@@ -77,12 +86,12 @@ impl<T: Monoid> SegTree2D<T> {
                 let mut rw = rj;
                 while lw < rw {
                     if lw&1 == 1 {
-                        ans = ans.op(&self.data[lh][lw]);
+                        ans = ans.op(&self.data[self.id(lh, lw)]);
                         lw += 1;
                     }
                     if rw&1 == 1 {
                         rw -= 1;
-                        ans = ans.op(&self.data[lh][rw]);
+                        ans = ans.op(&self.data[self.id(lh, rw)]);
                     }
 
                     lw >>= 1;
@@ -96,12 +105,12 @@ impl<T: Monoid> SegTree2D<T> {
                 let mut rw = rj;
                 while lw < rw {
                     if lw&1 == 1 {
-                        ans = ans.op(&self.data[rh][lw]);
+                        ans = ans.op(&self.data[self.id(rh, lw)]);
                         lw += 1;
                     }
                     if rw&1 == 1 {
                         rw -= 1;
-                        ans = ans.op(&self.data[rh][rw]);
+                        ans = ans.op(&self.data[self.id(rh, rw)]);
                     }
 
                     lw >>= 1;
