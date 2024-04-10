@@ -1,7 +1,7 @@
-pub trait Monoid: Clone {
+pub trait Monoid {
     fn e() -> Self;
 
-    fn op(a: &Self, b: &Self) -> Self;
+    fn op(&self, rhs: &Self) -> Self;
 }
 
 pub struct  SegmentTree<M> {
@@ -9,7 +9,7 @@ pub struct  SegmentTree<M> {
     node: Vec<M>,
 }
 
-impl<M: Monoid> From<&Vec<M>> for SegmentTree<M> {
+impl<M: Monoid + Clone> From<&Vec<M>> for SegmentTree<M> {
     fn from(value: &Vec<M>) -> Self {
         let n = value.len();
         let mut tree = SegmentTree::new(n);
@@ -24,9 +24,10 @@ impl<M: Monoid> From<&Vec<M>> for SegmentTree<M> {
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(mut n: usize) -> SegmentTree<M> {
         n = n.next_power_of_two();
+        let node = (0..2*n).map(|_| M::e()).collect();
         SegmentTree{
             n,
-            node: vec![M::e(); 2*n],
+            node,
         }
     }
 
@@ -37,7 +38,7 @@ impl<M: Monoid> SegmentTree<M> {
         self.node[i] = val;
         while i > 1 {
             i >>= 1;
-            self.node[i] = M::op(&self.node[i<<1], &self.node[i<<1 | 1]);
+            self.node[i] = self.node[i<<1].op(&self.node[i<<1 | 1]);
         }
     }
 
@@ -54,9 +55,7 @@ impl<M: Monoid> SegmentTree<M> {
             std::ops::Bound::Included(&v) => v+1,
             std::ops::Bound::Unbounded => self.n,
         };
-
-        assert!(l <= self.n);
-        assert!(r <= self.n);
+        assert!(l <= r && r <= self.n);
 
         l += self.n;
         r += self.n;
@@ -65,22 +64,22 @@ impl<M: Monoid> SegmentTree<M> {
         let mut ans_r = M::e();
         while l < r {
             if l&1 == 1 {
-                ans_l = M::op(&ans_l, &self.node[l]);
+                ans_l = ans_l.op(&self.node[l]);
                 l += 1;
             }
             if r&1 == 1 {
                 r -= 1;
-                ans_r = M::op(&self.node[r], &ans_r);
+                ans_r = self.node[r].op(&ans_r)
             }
             l >>= 1;
             r >>= 1;
         }
 
-        M::op(&ans_l, &ans_r)
+        ans_l.op(&ans_r)
     }
 
-    pub fn get(&self, i: usize) -> M {
+    pub fn get(&self, i: usize) -> &M {
         assert!(i < self.n);
-        self.node[i + self.n].clone()
+        &self.node[i + self.n]
     }
 }
